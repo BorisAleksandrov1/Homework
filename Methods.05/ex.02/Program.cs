@@ -1,7 +1,4 @@
-﻿using System;
-
-namespace ex02
-{
+﻿using System.Numerics;
     class Program
     {
         static void Main(string[] args)
@@ -11,264 +8,269 @@ namespace ex02
             .Split(" ")
             .Select(int.Parse)
             .ToArray();
-            
+
             while (cmd != "end")
             {
                 cmd = Console.ReadLine();
                 string[] command = cmd.Split(" ");
 
-                switch (command[0]) 
+                switch (command[0])
                 {
                     case "exchange":
                         int index = int.Parse(command[1]);
-                        Exchange(arr, index);
-                        Console.WriteLine("[" + string.Join(", ", arr) + "]");
+                        arr = Exchange(arr, index);
+                        Console.WriteLine(String.Join(" ", arr)); 
                         break;
 
                     case "max":
-                        int maxReturn = 0;
-                        maxReturn = MaxValue(arr, command[1]);
-                        Console.WriteLine(maxReturn);
-                        //working
+                        int maxEven = MaxEven(arr);
+                        int maxOdd = MaxOdd(arr);
+
+                        bool isEven;
+                        if (command[1] == "even")
+                        isEven = true;
+                        else
+                        isEven = false;
+
+
+                        if (isEven)
+                        {
+                            if (maxEven == -1)
+                            {
+                                Console.WriteLine("No matches");
+                                break;
+                            }
+                            Console.WriteLine(maxEven);
+                        } 
+                        else
+                        {
+                            if (maxOdd == -1)
+                            {
+                                Console.WriteLine("No matches");
+                                break;
+                            }
+                            Console.WriteLine(maxOdd);
+                        }
                         break;
 
                     case "min":
-                        int minReturn = 0;
-                        minReturn = MinValue(arr, command[1]);
-                        Console.WriteLine(minReturn);
-                        //working
+                        int minEven = MinEven(arr);
+                        int minOdd = MinOdd(arr);
+
+                        if (command[1] == "even")
+                            isEven = true;
+                        else
+                            isEven = false;
+
+
+                        if (isEven)
+                        {
+                            if (minEven == -1)
+                            {
+                                Console.WriteLine("No matches");
+                                break;
+                            }
+                            Console.WriteLine(minEven);
+                        }
+                        else
+                        {
+                            if (minOdd == -1)
+                            {
+                                Console.WriteLine("No matches");
+                                break;
+                            }
+                            Console.WriteLine(minOdd);
+                        }
                         break;
 
                     case "first":
-                        int countFirst = int.Parse(command[1]);
-                        string resultFirst = PrintFirst(arr, command[2], countFirst);
-                        Console.WriteLine(resultFirst);
-                        //working
+                        int count = int.Parse(command[1]);
+
+                        if (command[2] == "even")
+                            isEven = true;
+                        else
+                            isEven = false;
+
+                        if (count > arr.Length)
+                        {
+                            Console.WriteLine("Invalid count");
+                            break;
+                        }
+
+                        if (isEven)
+                        {
+                            int[] result = FirstEven(arr, count);
+                            Console.WriteLine("[" + string.Join(",", result) + "]");
+                        }
+                        else
+                        {
+                            int[] result = FirstOdd(arr, count);
+                            Console.WriteLine("[" + string.Join(",", result) + "]");
+                        }
                         break;
                     case "last":
-                        int countLast = int.Parse(command[1]);
-                        string resultLast = PrintLast(arr, command[2], countLast);
-                        Console.WriteLine(resultLast);
+                        count = int.Parse(command[1]);
+
+                        if (command[2] == "even")
+                            isEven = true;
+                        else
+                            isEven = false;
+
+                        if (count > arr.Length)
+                        {
+                            Console.WriteLine("Invalid count");
+                            break;
+                        }
+
+                        if (isEven)
+                        {
+                            int[] result = LastEven(arr, count);
+                            Console.WriteLine("[" + string.Join(",", result) + "]");
+                        }
+                        else
+                        {
+                            int[] result = LastOdd(arr, count);
+                            Console.WriteLine("[" + string.Join(",", result) + "]");
+                        }
                         break;
                 }
             }
         }
 
-        static int MaxValue(int[] arr, string oddOrEven)
+        static int[] Exchange(int[] arr, int index)
         {
-            int indexOdd = 1;
-            int indexEven = 1;
-            int minOdd = int.MinValue;
-            int minEven = int.MinValue;
-            for (int i = 0; i < arr.Length; i++)
+            for(int i = 0; i < index; i++)
             {
-                if (i % 2 == 0)
+                int temp = arr[0];
+                for (int j = 1; j < arr.Length; j++)
                 {
-                    if (arr[i] > minOdd)
-                    {
-                        minOdd = arr[i];
-                    }
+                    arr[j - 1] = arr[j];
                 }
-                else
-                {
-                    if (arr[i] > minEven)
-                    {
-                       minEven = arr[i];
-                    }
-                }
+                arr[arr.Length - 1] = temp;
             }
+            return arr;
+        }
 
-            for (int i = 0; i < arr.Length; i++)
+        static int MaxEven(int[] arr)
+        {
+           int max = arr.Max(x => x);
+           List<int> numbers = new List<int>();
+           for (int i = 0;i < arr.Length;i++)
             {
-                if (minEven == arr[i])
+                if (arr[i] % 2 == 0)
                 {
-                    indexEven += i;
-                }
-                else if(minOdd == arr[i])
-                {
-                    indexOdd += i;
+                    numbers.Add(arr[i]);
                 }
             }
-
-            if (oddOrEven == "even")
-            {
-                return indexEven;
-            }
-            else
-            {
-                return indexOdd;
-            }
+           int index = numbers.FindLastIndex(x => x == max);
+           return index;
+        }
         
-        }static int MinValue(int[] arr, string oddOrEven)
+        static int MaxOdd(int[] arr)
         {
-            int indexOdd = 1;
-            int indexEven = 1;
-            int maxOdd = int.MaxValue;
-            int maxEven = int.MaxValue;
-            for (int i = 0; i < arr.Length; i++)
+           int max = arr.Max(x => x);
+           List<int> numbers = new List<int>();
+           for (int i = 0;i < arr.Length;i++)
             {
-                if (i % 2 == 0)
+                if (arr[i] % 2 != 0)
                 {
-                    if (arr[i] < maxOdd)
-                    {
-                        maxOdd = arr[i];
-                    }
-                }
-                else
-                {
-                    if (arr[i] < maxEven)
-                    {
-                       maxEven = arr[i];
-                    }
+                    numbers.Add(arr[i]);
                 }
             }
+           int result = numbers.FindLastIndex(x => x == max);
+           if (result == -1)
+            {
 
-            for (int i = 0; i < arr.Length; i++)
+            }
+           return result;
+        }
+           static int MinEven(int[] arr)
+        {
+           int min = arr.Min(x => x);
+           List<int> numbers = new List<int>();
+           for (int i = 0;i < arr.Length;i++)
             {
-                if (maxEven == arr[i])
+                if (arr[i] % 2 == 0)
                 {
-                    indexEven += i;
+                    numbers.Add(arr[i]);
                 }
-                else if(maxOdd == arr[i])
+            }
+           int result = numbers.FindLastIndex(x => x == min);
+           return result;
+        }
+        
+        static int MinOdd(int[] arr)
+        {
+           int min = arr.Min(x => x);
+           List<int> numbers = new List<int>();
+           for (int i = 0;i < arr.Length;i++)
+            {
+                if (arr[i] % 2 != 0)
                 {
-                    indexOdd += i;
+                    numbers.Add(arr[i]);
                 }
             }
-
-            if (oddOrEven == "even")
-            {
-                return indexEven;
-            }
-            else
-            {
-                return indexOdd;
-            }
+           int result = numbers.FindLastIndex(x => x == min);
+           return result;
         }
 
-        static string PrintFirst(int[] arr,string oddOrEven,int count)
-        {
-            if (count > arr.Length)
+        static int[] FirstEven(int[] arr, int count)
+        { 
+            int timesRepeated = 0;
+            int[] result = new int[count];
+            for(int i = 0; i < arr.Length && timesRepeated < count; i++)
             {
-                return "Invalid count";
-            }
-
-            string result = "[";
-            int num = 0;
-            int addedElements = 0;
-            bool isOdd = false;
-
-            if (oddOrEven == "odd")
-            {
-                isOdd = true;
-            }
-
-            if(!isOdd)
-            {
-                num = 1;
-            }
-
-            for(int i = num;i < arr.Length;i += 2)
-            { 
-                result += arr[i];
-                addedElements++;
-                if (addedElements < count)
+                if (arr[i] % count == 0)
                 {
-                result += ", ";
-                }
-                else if (addedElements == count)
-                {
-                    result += "]";
-                    return result;
+                    result[timesRepeated] = arr[i];
+                    timesRepeated++;
                 }
             }
-
-            if (addedElements == 0)
+            return result;
+        }
+        static int[] FirstOdd(int[] arr, int count)
+        { 
+            int timesRepeated = 0;
+            int[] result = new int[count];
+            for(int i = 0; i < arr.Length && timesRepeated < count; i++)
             {
-                return "[]";
+                if (arr[i] % count != 0)
+                {
+                    result[timesRepeated] = arr[i];
+                    timesRepeated++;
+                }
             }
-
-            result += "]";
+            return result;
+        }
+        static int[] LastEven(int[] arr, int count)
+        { 
+            int timesRepeated = 0;
+            int[] result = new int[count];
+            for(int i = arr.Length - 1; 0 < i && timesRepeated < count; i--)
+            {
+                if (arr[i] % count == 0)
+                {
+                    result[timesRepeated] = arr[i];
+                    timesRepeated++;
+                }
+            }
+            return result;
+        }
+        static int[] LastOdd(int[] arr, int count)
+        { 
+            int timesRepeated = 0;
+            int[] result = new int[count];
+            for(int i = arr.Length - 1; 0 < i && timesRepeated < count; i--)
+            {
+                if (arr[i] % count != 0)
+                {
+                    result[timesRepeated] = arr[i];
+                    timesRepeated++;
+                }
+            }
             return result;
         }
 
-
-        static string PrintLast(int[] arr, string oddOrEven, int count)
-        {
-            if (count > arr.Length)
-            {
-                return "Invalid count";
-            }
-
-            string result = "[";
-            int num = arr.Length - 1;
-            int addedElements = 0;
-            bool isOdd = false;
-
-            if (oddOrEven == "odd")
-            {
-                isOdd = true;
-            }
-
-            if (!isOdd)
-            {
-                num = arr.Length;
-            }
-
-            for (int i = num; i > 0; i -= 2)
-            {
-                result += arr[i - 1];
-                addedElements++;
-                if (addedElements < count)
-                {
-                    result += ", ";
-                }
-                else if (addedElements == count)
-                {
-                    result += "]";
-                    return result;
-                }
-            }
-
-            if (addedElements == 0)
-            {
-                return "[]";
-            }
-
-            result += "]";
-            return result;
-        }
-
-        static void Exchange(int[] arr, int index)
-        {
-            if (index < 0 || index >= arr.Length - 1)
-            {
-                Console.WriteLine("Invalid index");
-                return;
-            }
-
-            int[] tempArray = new int[arr.Length];
-            int secondPartStart = index + 1;
-            int pos = 0;
-
-            for (int i = secondPartStart; i < arr.Length; i++)
-            {
-                tempArray[pos] = arr[i];
-                pos++;
-            }
-
-            for (int i = 0; i <= index; i++)
-            {
-                tempArray[pos] = arr[i];
-                pos++;
-            }
-
-            for (int i = 0; i < arr.Length; i++)
-            {
-                arr[i] = tempArray[i];
-            }
-        }
-
-
+        
 
     }
-}
